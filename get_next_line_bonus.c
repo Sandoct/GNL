@@ -6,7 +6,7 @@
 /*   By: gpouzet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/18 16:19:40 by gpouzet           #+#    #+#             */
-/*   Updated: 2022/11/28 21:44:05 by gpouzet          ###   ########.fr       */
+/*   Updated: 2022/12/06 18:13:01 by gpouzet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line_bonus.h"
@@ -48,11 +48,10 @@ static char	*append(char *file, char *reading)
 	return (tmp);
 }
 
-static char	*endfile(char **file, char *reading)
+static char	*endfile(char **file)
 {
 	char	*tmp;
 
-	free(reading);
 	if (!file || !(*file))
 		return (NULL);
 	tmp = ft_substr(*file, 0, ft_strlen(*file));
@@ -66,24 +65,25 @@ char	*get_next_line(int fd)
 	static char	*file[1024] = {NULL};
 	char		*reading;
 	char		*line;
-	int			readed;
 
 	line = NULL;
+	if (fd < 0 || fd > 1024)
+		return (NULL);
 	reading = malloc(BUFFER_SIZE + 1);
 	while (!line)
 	{
 		line = next_line(file[fd]);
 		if (line)
 			file[fd] = reset(file[fd]);
-		else
+		if (line)
+			break ;
+		ft_memset(reading, '\0', BUFFER_SIZE + 1);
+		if (read(fd, reading, BUFFER_SIZE) <= 0)
 		{
-			ft_memset(reading, '\0', BUFFER_SIZE + 1);
-			readed = read(fd, reading, BUFFER_SIZE);
-			if (*reading)
-				file[fd] = append(file[fd], reading);
-			if (readed <= 0)
-				return (endfile(&file[fd], reading));
+			free(reading);
+			return (endfile(&file[fd]));
 		}
+		file[fd] = append(file[fd], reading);
 	}
 	free(reading);
 	return (line);

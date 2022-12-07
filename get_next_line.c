@@ -6,7 +6,7 @@
 /*   By: gpouzet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 17:11:15 by gpouzet           #+#    #+#             */
-/*   Updated: 2022/12/04 20:25:50 by gpouzet          ###   ########.fr       */
+/*   Updated: 2022/12/06 18:14:44 by gpouzet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
@@ -67,23 +67,23 @@ char	*get_next_line(int fd)
 	char		*line;
 
 	line = NULL;
+	if (fd < 0 || fd > 1024)
+		return (NULL);
 	reading = malloc(BUFFER_SIZE + 1);
 	while (!line)
 	{
 		line = next_line(file);
 		if (line)
 			file = reset(file);
-		else
+		if (line)
+			break ;
+		ft_memset(reading, '\0', BUFFER_SIZE + 1);
+		if (read(fd, reading, BUFFER_SIZE) <= 0)
 		{
-			ft_memset(reading, '\0', BUFFER_SIZE + 1);
-			if (read(fd, reading, BUFFER_SIZE) <= 0)
-			{
-				free(reading);
-				return (endfile(&file));
-			}
-			else if (*reading)
-				file = append(file, reading);
+			free(reading);
+			return (endfile(&file));
 		}
+		file = append(file, reading);
 	}
 	free(reading);
 	return (line);
