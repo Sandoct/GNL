@@ -6,7 +6,7 @@
 /*   By: gpouzet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 17:11:15 by gpouzet           #+#    #+#             */
-/*   Updated: 2022/12/06 18:14:44 by gpouzet          ###   ########.fr       */
+/*   Updated: 2022/12/08 15:40:58 by gpouzet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
@@ -67,7 +67,7 @@ char	*get_next_line(int fd)
 	char		*line;
 
 	line = NULL;
-	if (fd < 0 || fd > 1024)
+	if (fd < 0 || fd > 1024 || BUFFER_SIZE <= 0)
 		return (NULL);
 	reading = malloc(BUFFER_SIZE + 1);
 	while (!line)
